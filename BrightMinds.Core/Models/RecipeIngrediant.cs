@@ -1,11 +1,11 @@
-﻿using BrightMinds.Core.Enums;
+using BrightMinds.Core.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BrightMinds.Core.Models
 {
     public class RecipeIngrediant : BaseEntity
     {
-        [ForeignKey("Recipe")] 
+        [ForeignKey("Recipe")]
         public int RecipeId { get; set; }
         public virtual Recipe Recipe { get; set; }
 
@@ -18,9 +18,11 @@ namespace BrightMinds.Core.Models
         public Recipe SubRecipe { get; set; }
 
         public IngredientType IngredientType { get; set; }
-
         public decimal Quantity { get; set; }
         public UnitType UnitType { get; set; }
+
+        // Null means this is a legacy ingredient whose unit is described by UnitType.
+        public RawMaterialUnitLevel? RawMaterialUnitLevel { get; set; }
     }
 
     public static class RecipeIngrediantExtensions
@@ -32,15 +34,15 @@ namespace BrightMinds.Core.Models
                 error = "SubRecipe ID is required when ingredient type is sub recipe!";
                 return false;
             }
-            else if(recipeIngredient.IngredientType == IngredientType.RawMaterial && recipeIngredient.RawMaterialId == null)
+            else if (recipeIngredient.IngredientType == IngredientType.RawMaterial && recipeIngredient.RawMaterialId == null)
             {
                 error = "Raw Material ID is required when ingredient type is Raw Material!";
                 return false;
             }
-            else if((recipeIngredient.RawMaterialId == null && recipeIngredient.SubRecipeId == null)||
-                    (recipeIngredient.RawMaterialId != null && recipeIngredient.SubRecipeId != null))
+            else if ((recipeIngredient.RawMaterialId == null && recipeIngredient.SubRecipeId == null) ||
+                     (recipeIngredient.RawMaterialId != null && recipeIngredient.SubRecipeId != null))
             {
-                error = "The recipie ingredient must me either Raw Material Or Sub Recipe!";
+                error = "The recipe ingredient must be either Raw Material Or Sub Recipe!";
                 return false;
             }
 

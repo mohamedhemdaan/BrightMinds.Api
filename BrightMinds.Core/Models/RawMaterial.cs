@@ -1,10 +1,7 @@
-﻿using BrightMinds.Core.Enums;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using BrightMinds.Core.Enums;
 
 namespace BrightMinds.Core.Models
 {
-
     public class RawMaterial : BaseEntity
     {
         public string Name { get; set; }
@@ -12,15 +9,12 @@ namespace BrightMinds.Core.Models
 
         public HandlingType HandlingType { get; set; }
 
+        // Legacy purchase-level contract retained for existing clients.
         public string? ContainerUnitName { get; set; }
         public decimal ContainerSize { get; set; }
-
         public UnitType UnitType { get; set; }
-
         public string? SubUnitName { get; set; }
-
         public decimal? UnitWeightInKg { get; set; }
-
         public decimal TotalContainerPrice { get; set; }
 
         public decimal NormalStockLevel { get; set; }
@@ -34,29 +28,28 @@ namespace BrightMinds.Core.Models
         public bool HasWeight => UnitWeightInKg.HasValue && UnitWeightInKg.Value > 0;
 
         public bool IsRestaurantSupply { get; set; } = false;
-
         public bool IsMeat { get; set; } = false;
         public decimal? MeatFactor { get; set; }
         public bool IsMultiplierLocked { get; set; } = false;
 
-        // ✅ الحقول الجديدة (اختيارية، تُرسل فقط إذا كانت موجودة)
+        // Existing calculated/reference prices retained for compatibility.
         public decimal? PricePerKg { get; set; }
         public decimal? PricePerPiece { get; set; }
-
         public virtual ICollection<RawMaterialUnit> Units { get; set; } = new List<RawMaterialUnit>();
 
-        // ============================================================
-        //  ✅ المستوى الثالث: الوحدة الداخلية الأصغر
-        //  (داخل الوحدة الوسطى - SubUnit)
-        //  المعادلة الموحّدة:
-        //    PricePerInnerUnit = PricePerSubUnit / InnerUnitsPerSubUnit
-        //  لو InnerUnitsPerSubUnit = 1 → السعر = سعر الوحدة الوسطى
-        // ============================================================
+        // Explicit middle/smallest unit fields. ContainerUnitName, ContainerSize,
+        // and TotalContainerPrice continue to represent purchase unit, middle
+        // units per purchase unit, and purchase-unit price respectively.
+        public string? MiddleUnitName { get; set; }
+        public string? SmallestUnitName { get; set; }
+        public decimal SmallestUnitsPerMiddleUnit { get; set; } = 1;
+        public decimal? PricePerMiddleUnit { get; set; }
+        public decimal? PricePerSmallestUnit { get; set; }
+
+        // Legacy inner-unit fields retained for backward compatibility.
         public string? InnerUnitName { get; set; }
         public decimal InnerUnitsPerSubUnit { get; set; } = 1;
         public decimal? InnerUnitWeightInKg { get; set; }
         public decimal? PricePerInnerUnit { get; set; }
-
     }
-
 }
